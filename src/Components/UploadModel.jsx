@@ -27,10 +27,11 @@ const UploadModel = ({ open, handleClose, imageId, imageData }) => {
         if (imageId && imageData) {
             setTitle(imageData.title || '');
             setDescription(imageData.description || '');
+            setImage(null); // Reset the image when opening the modal (if editing)
         } else {
             setTitle('');
             setDescription('');
-            setImage(null); // Reset the image
+            setImage(null); // Reset image if creating a new post
         }
     }, [imageId, imageData, open]);
 
@@ -38,25 +39,31 @@ const UploadModel = ({ open, handleClose, imageId, imageData }) => {
         const file = event.target.files[0];
         setImage(file);
     };
-
     const handleSave = async () => {
         const formData = new FormData();
 
+        // Only append title if it has changed
         if (title !== (imageData?.title || '')) {
             formData.append('title', title);
         }
 
+        // Only append description if it has changed
         if (description !== (imageData?.description || '')) {
             formData.append('description', description);
         }
 
+        // Append the new image if it's been changed
         if (image) {
             formData.append('image', image);
+        } else if (imageData?.image) {
+            // If the image hasn't changed, add the existing image URL (or file identifier)
+            formData.append('image', imageData.image);
         }
 
         try {
             let response;
             if (imageId) {
+                // Update existing post
                 response = await axios.put(
                     `http://localhost:5000/posts/${imageId}`,
                     formData,
@@ -67,6 +74,7 @@ const UploadModel = ({ open, handleClose, imageId, imageData }) => {
                     }
                 );
             } else {
+                // Create new post
                 response = await axios.post('http://localhost:5000/posts', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
@@ -74,17 +82,21 @@ const UploadModel = ({ open, handleClose, imageId, imageData }) => {
                 });
             }
 
+            // Clear fields after success
             setTitle('');
             setDescription('');
             setImage(null);
 
-            // Show Snackbar message on success
+            // Show success message
             setSnackbarMessage('Image uploaded successfully!');
             setOpenSnackbar(true);
 
+            // Close modal
             handleClose();
         } catch (error) {
             console.error('Error saving image:', error);
+            setSnackbarMessage('Failed to upload image.');
+            setOpenSnackbar(true);
         }
     };
 
@@ -131,22 +143,22 @@ const UploadModel = ({ open, handleClose, imageId, imageData }) => {
                         sx={{
                             mt: 2,
                             input: {
-                                color: 'white', // Set the text color to white
-                                backgroundColor: 'black', // Set background color of the input field
+                                color: 'white',
+                                backgroundColor: 'black',
                             },
-                            label: { color: 'white' }, // Set label color to white
+                            label: { color: 'white' },
                             '& .MuiOutlinedInput-root': {
                                 '& fieldset': {
-                                    borderColor: 'white', // Set border color to white
+                                    borderColor: 'white',
                                 },
                                 '&:hover fieldset': {
-                                    borderColor: 'white', // Set border color on hover
+                                    borderColor: 'white',
                                 },
                                 '&.Mui-focused fieldset': {
-                                    borderColor: 'white', // Set border color when focused
+                                    borderColor: 'white',
                                 },
                                 '& .MuiInputBase-input': {
-                                    color: 'white', // Override dynamically generated class and set text color to white
+                                    color: 'white',
                                 },
                             },
                         }}
