@@ -12,11 +12,15 @@ const ImageComponent = ({ imageData, refreshTrigger, setRefreshTrigger }) => {
     try {
       const response = await axios.delete(`http://localhost:5000/posts/${imageData._id}`);
       console.log("Delete successful", response.data);
-
+  
+      // Alert for successful delete
+      alert('Image successfully deleted.');
+  
       // Trigger re-fetch after delete
       setRefreshTrigger(!refreshTrigger); // Toggle refresh trigger to re-fetch data
     } catch (error) {
       console.error("Error deleting post", error);
+      alert('Error deleting image. Please try again.');
     }
   };
 
