@@ -6,15 +6,18 @@ import ImageComponent from "./ImageComponent";
 const ShowBox = () => {
     const [imageData, setImageData] = useState(null);
     const [refreshTrigger, setRefreshTrigger] = useState(false); // State to trigger refresh
-
+    
     const fetchImages = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/posts");
+            const API_BASE_URL = import.meta.env.VITE_API_URL; // Use environment variable
+
+            const response = await axios.get(`${API_BASE_URL}/posts`);
             setImageData(response.data);
         } catch (error) {
             console.error("Error fetching data", error);
         }
     };
+
 
     useEffect(() => {
         fetchImages(); // Fetch on mount
@@ -61,7 +64,7 @@ const ShowBox = () => {
                             }}
                         >
                             <ImageComponent
-                                sx={{  height: '100%' }} // Make sure ImageComponent fills the height
+                                sx={{ height: '100%' }} // Make sure ImageComponent fills the height
                                 imageData={image}
                                 refreshTrigger={refreshTrigger}
                                 setRefreshTrigger={setRefreshTrigger}

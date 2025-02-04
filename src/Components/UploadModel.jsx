@@ -62,10 +62,12 @@ const UploadModel = ({ open, handleClose, imageId, imageData }) => {
 
         try {
             let response;
+            const API_BASE_URL = import.meta.env.VITE_API_URL; // Use environment variable
+        
             if (imageId) {
                 // Update existing post
                 response = await axios.put(
-                    `http://localhost:5000/posts/${imageId}`,
+                    `${API_BASE_URL}/posts/${imageId}`,
                     formData,
                     {
                         headers: {
@@ -75,29 +77,36 @@ const UploadModel = ({ open, handleClose, imageId, imageData }) => {
                 );
             } else {
                 // Create new post
-                response = await axios.post('http://localhost:5000/posts', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                });
+                response = await axios.post(
+                    `${API_BASE_URL}/posts`,
+                    formData,
+                    {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                        },
+                    }
+                );
             }
-
+        
             // Clear fields after success
             setTitle('');
             setDescription('');
             setImage(null);
-
+        
             // Show success message
             setSnackbarMessage('Image uploaded successfully!');
             setOpenSnackbar(true);
-
+        
             // Close modal
             handleClose();
         } catch (error) {
             console.error('Error saving image:', error);
+        
+            // Show error message
             setSnackbarMessage('Failed to upload image.');
             setOpenSnackbar(true);
         }
+        
     };
 
     return (

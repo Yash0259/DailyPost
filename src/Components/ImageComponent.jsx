@@ -10,7 +10,9 @@ const ImageComponent = ({ imageData, refreshTrigger, setRefreshTrigger }) => {
 
   const handleDelete = async () => {
     try {
-      const response = await axios.delete(`http://localhost:5000/posts/${imageData._id}`);
+      const API_BASE_URL = import.meta.env.VITE_API_URL; // Use environment variable
+
+      const response = await axios.delete(`${API_BASE_URL}/posts/${imageData._id}`);
       console.log("Delete successful", response.data);
 
       // Alert for successful delete
@@ -47,12 +49,15 @@ const ImageComponent = ({ imageData, refreshTrigger, setRefreshTrigger }) => {
       <Box
         sx={{
           height: '70%', // Image takes up 70% of the box height
-          backgroundImage: imageData.image ? `url(http://localhost:5000${imageData.image})` : 'url(/placeholder.jpg)',
+          backgroundImage: imageData.image
+            ? `url(${import.meta.env.VITE_API_URL}${imageData.image})`
+            : 'url(/placeholder.jpg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           borderRadius: '8px 8px 0 0', // Round the top corners of the image
         }}
       />
+
 
       {/* Content Section */}
       <Box
